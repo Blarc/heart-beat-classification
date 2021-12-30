@@ -1,4 +1,4 @@
-function ClassifyAll(path)
+function ClassifyAll(path, sampling_time)
 
     filesPath = sprintf('%s\\*.mat', path);
     files = dir(filesPath);
@@ -12,7 +12,7 @@ function ClassifyAll(path)
         baseFileNameNoExt = baseFileNameNoExt(1:end-1);
         fprintf('%s (%d \\ %d)\n', baseFileNameNoExt, index, filesSize - 1);
         filePath = sprintf('%s\\%s', path, baseFileNameNoExt);
-        Classification(filePath);
+        Classification(filePath, sampling_time);
 
         index = index + 1;
     end

@@ -1,15 +1,18 @@
-function [] = Classification(record)
+function [] = Classification(record, sampling_time)
 
     function [score] = getScoreD1(i1, i2, a1, a2, l)
-        part_1 = sum(abs(a1 - i1)) / l;
-        part_2 = sum(abs(a2 - i2)) / l;
+        s1 = size(i1, 2);
+
+        part_1 = sum(abs(a1(1:s1) - i1)) / l;
+        part_2 = sum(abs(a2(1:s1) - i2)) / l;
         score = (part_1 + part_2) / 2;
     end
 
     data_file = strcat(record, 'm.mat');
     fatr_file = strcat(record, '-fatr.txt');
-    avg_N_file = strcat(record, '-avg-N.txt');
-    avg_V_file = strcat(record, '-avg-V.txt');
+
+    avg_N_file = strcat(record, sprintf('-avg-N-%d.txt', sampling_time));
+    avg_V_file = strcat(record, sprintf('-avg-V-%d.txt', sampling_time));
     result_file = strcat(record, '.cls');
 
     dir_n = dir(avg_N_file);

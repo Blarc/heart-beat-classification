@@ -82,3 +82,6 @@ Average                                                100.00 100.00  84.71  44.
 Total QRS complexes: 7545433  Total VEBs: 72568
 
 Summary of results from 76 records
+Sensitivity (Se): .966
+Specificity(Sp): .914
+Precision(P+): .999

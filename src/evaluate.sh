@@ -1,5 +1,5 @@
 if [ -z "$1" ]; then
-	printf "ERROR: No path provided!\n" 
+	printf "ERROR: No path provided!\n"
 	exit 1
 fi
 
@@ -21,4 +21,19 @@ for f in *.cls; do
 	bxb -r "$basename" -a fatr qrs -l eval1.txt eval2.txt
 done
 
-sumstats eval1.txt eval2.txt >"${tmp}/results.txt"
+sumstats eval1.txt eval2.txt >"${tmp}/../results.txt"
+read -r -a results <<< "$(tac "${tmp}/../results.txt" | sed '6q;d')"
+
+tp=${results[1]}
+fp=${results[2]}
+fn=${results[5]}
+tn=${results[6]}
+
+sensitivity="$(bc <<< "scale=3; ${tp}/(${tp}+${fn})")"
+specificity="$(bc <<< "scale=3; ${tn}/(${tn}+${fp})")"
+precision="$(bc <<< "scale=3; ${tp}/(${tp}+${fp})")"
+
+printf "Sensitivity (Se): %s\nSpecificity(Sp): %s\nPrecision(+P): %s\n" "$sensitivity" "$specificity" "$precision"
+printf "Sensitivity (Se): %s\nSpecificity(Sp): %s\nPrecision(+P): %s\n" "$sensitivity" "$specificity" "$precision" >> "${tmp}/../results.txt"
+
+

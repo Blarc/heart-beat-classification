@@ -12,33 +12,27 @@ function [] = Classification(record, sampling_time)
         for i=2:sigLen
             fsig(i)=c2*fsig(i-1)+c1*(sig(i)-sig(i-1));
         end
-
     end
 
-    function [isNormal] = classifyD1(i1, i2, a1, a2, l)
+    function [part_1, part_2] = classifyD1(i1, i2, a1, a2, l)
         s1 = size(i1, 2);
         part_1 = sum(abs(a1(1:s1) - i1)) / l;
         part_2 = sum(abs(a2(1:s1) - i2)) / l;
-        score = (part_1 + part_2) / 2;
-        isNormal = score < 0.6;
     end
 
-    function [isNormal] = classifyD2(i1, i2, a1, a2, l)
+    function [part_1, part_2] = classifyD2(i1, i2, a1, a2, l)
         s1 = size(i1, 2);
         part_1 = sqrt(sum(pow2(a1(1:s1) - i1)) / l);
         part_2 = sqrt(sum(pow2(a2(1:s1) - i2)) / l);
-        score = (part_1 + part_2) / 2;
-        isNormal = score < 2.5;
     end
 
-    function [isNormal] = classifyMax(i1, i2, a1, a2, l)
+    function [part_1, part_2] = classifyMax(i1, i2, a1, a2, l)
         s1 = size(i1, 2);
         part_1 = max(abs(a1(1:s1) - i1));
         part_2 = max(abs(a2(1:s1) - i2));
-        isNormal = part_1 < 0.9;
     end
 
-    function [isNormal] = classifyD3(i1, i2, a1, a2, l)
+    function [d1] = classifyD3(i1, i2, a1, a2, l)
         s1 = size(i1, 2);
         mean_i1 = mean(i1);
         mean_a1 = mean(a1);
@@ -46,15 +40,12 @@ function [] = Classification(record, sampling_time)
         S_i1 = sum(pow2(i1 - mean_i1));
         S_a1 = sum(pow2(a1(1:s1) - mean_a1));
 
-        r = (1 / sqrt(dot(S_i1, S_a1))) * sum(dot((i1 - mean_i1), (a1(1:s1) - mean_a1)));
+        r1 = (1 / sqrt(dot(S_i1, S_a1))) * sum(dot((i1 - mean_i1), (a1(1:s1) - mean_a1)));
 
-        d = 1;
-        if (r > 0)
-            d = 1 - r;
+        d1 = 1;
+        if (r1 > 0)
+            d1 = 1 - r;
         end
-
-        d
-        isNormal = d > 0.55;
     end
 
     window_left = 14; % max 14
@@ -82,8 +73,8 @@ function [] = Classification(record, sampling_time)
 %    hold on;
 
     data = load(data_file);
-    data_1 = HPFilter(data.val(1, :), 2, 1/200) / 200;
-    data_2 = HPFilter(data.val(2, :), 2, 1/200) / 200;
+    data_1 = HPFilter(data.val(1, :), 2, 1/360) / 200;
+    data_2 = HPFilter(data.val(2, :), 2, 1/360) / 200;
     data_length = size(data_1, 2);
 
     count = 0;
@@ -107,9 +98,10 @@ function [] = Classification(record, sampling_time)
         input_1 = data_1(from:to);
         input_2 = data_2(from:to);
 
-        isNormal = classifyMax(input_1, input_2, avg_N_1, avg_N_2, avg_length_N);
+        [max_1, max_2] = classifyMax(input_1, input_2, avg_N_1, avg_N_2, avg_length_N);
+        [d1_1, d1_2] = classifyD1(input_1, input_2, avg_N_1, avg_N_2, avg_length_N);
 
-        if (isNormal)
+        if (max_1 < 1.0 && max_2 < 1.0 && d1_1 < 0.9)
             fprintf(fid_result, '0:00:00.00 %d N 0 0 0\n', fidicial_point);
         else
             fprintf(fid_result, '0:00:00.00 %d V 0 0 0\n', fidicial_point);

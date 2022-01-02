@@ -32,8 +32,9 @@ tn=${results[6]}
 sensitivity="$(bc <<< "scale=3; ${tp}/(${tp}+${fn})")"
 specificity="$(bc <<< "scale=3; ${tn}/(${tn}+${fp})")"
 precision="$(bc <<< "scale=3; ${tp}/(${tp}+${fp})")"
+neg_predictivity="$(bc <<< "scale=3; ${tn}/(${tn}+${fn})")"
 
-printf "Sensitivity (Se): %s\nSpecificity(Sp): %s\nPrecision(+P): %s\n" "$sensitivity" "$specificity" "$precision"
-printf "Sensitivity (Se): %s\nSpecificity(Sp): %s\nPrecision(+P): %s\n" "$sensitivity" "$specificity" "$precision" >> "${tmp}/../results.txt"
+printf "Sensitivity (Se): %s\nSpecificity(Sp): %s\nPrecision(+P): %s\nNegative predictivity(-P): %s\n" "$sensitivity" "$specificity" "$precision" "$neg_predictivity"
+printf "Sensitivity (Se): %s\nSpecificity(Sp): %s\nPrecision(+P): %s\nNegative predictivity(-P): %s\n" "$sensitivity" "$specificity" "$precision" "$neg_predictivity" >> "${tmp}/../results.txt"
 
 
